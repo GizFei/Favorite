@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">集</string>
+    <string name="collecting_text">正在收藏到【集】应用……</string>
+    <string name="new_item_text">新建收藏</string>
+    <string name="new_item_title">标题</string>
+    <string name="new_item_content">内容</string>
+    <string name="img_content_desc">一张图片</string>
+    <string name="item_option_star">收藏</string>
+    <string name="item_option_archive">归档</string>
+    <string name="item_option_delete">删除</string>
+    <string name="bab_option_search">搜索</string>
+    <string name="del_snackbar_done">删除成功</string>
+    <string name="del_snackbar_undo">撤消</string>
+    <string name="del_snackbar_undo_success">撤消成功</string>
+    <string name="main_title">所有收藏</string>
+    <string name="item_today">今天</string>
+    <string name="side_title">我的收藏夹</string>
+    <string name="new_archive_text">新建收藏夹</string>
+    <string name="new_archive_title">名称</string>
+    <string name="item_archive_del">删除</string>
+    <string name="item_archive_rename">重命名</string>
+    <string name="archiving_item_text">添加到收藏夹……</string>
+    <string name="bab_option_clipboard">从剪贴板收藏</string>
+    <string name="search_hint">输入标题/来源</string>
+    <string name="date_picker_title">选择查询的日期</string>
+    <string name="main_date_picker">按日期筛选</string>
+    <string name="main_show_all">显示所有收藏</string>
+    <string name="about_version">集 v1.0</string>
+    <string name="about_author">制作人：Giz</string>
+    <string name="about_trick_title">收藏小技巧</string>
+    <string name="bab_option_about">关于应用</string>
+    <string name="no_rich_content">以下显示离线保存的内容（请检查手机的网格）</string>
+</resources>

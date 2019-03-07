@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#03A9F4</color>
+    <color name="colorPrimaryDark">#007AC1</color>
+    <color name="colorPrimaryLight">#67DAFF</color>
+    <color name="colorAccent">#ff7043</color>
+
+    <color name="transparent">#00FFFFFF</color>
+    <color name="transparent_black">#7D000000</color>
+    <color name="black">#263238</color>
+    <color name="white">#FFF</color>
+
+    <color name="gray_ccc">#CCC</color>
+
+    <!-- View特有 -->
+    <color name="favorite_rv_background">#F8F8F8</color>
+    <color name="item_header_text_color">#AAA</color>
+</resources>

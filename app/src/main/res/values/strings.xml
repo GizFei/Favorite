@@ -1,0 +1,47 @@
+<resources>
+    <string name="app_name">Favorite</string>
+    <string name="main_title">All Favorites</string>
+    <string name="collecting_text">Collecting to Favorite app&#8230;</string>
+    <string name="new_item_text">New Item</string>
+    <string name="new_archive_text">New Archive</string>
+    <string name="archiving_item_text">Archive the article to&#8230;</string>
+
+    <string name="new_item_title">Title</string>
+    <string name="new_item_content">Content</string>
+    <string name="new_archive_title">Title</string>
+    <string name="img_content_desc">An Image</string>
+    <string name="item_today">Today</string>
+    <string name="search_hint">Input title/source</string>
+    <string name="side_title">My Archives</string>
+    <string name="date_picker_title">Choose the date</string>
+
+    <!-- 收藏项操作菜单 -->
+    <string name="item_option_star">Star</string>
+    <string name="item_option_archive">Archive</string>
+    <string name="item_option_delete">Delete</string>
+    <!-- 底部工具栏常规菜单-->
+    <string name="bab_option_search">Search</string>
+    <string name="bab_option_clipboard">Check Clipboard</string>
+    <string name="bab_option_about">About App</string>
+
+    <!-- 删除收藏项时的Snackbar提示 -->
+    <string name="del_snackbar_done">Delete</string>
+    <string name="del_snackbar_undo">Undo</string>
+    <string name="del_snackbar_undo_success">Undo Successfully</string>
+
+    <!-- 收藏夹菜单 -->
+    <string name="item_archive_rename">Rename</string>
+    <string name="item_archive_del">Delete</string>
+
+    <!-- 主页菜单 -->
+    <string name="main_date_picker">Pick time</string>
+    <string name="main_show_all">Show all</string>
+    
+    <!-- 关于页面 -->
+    <string name="about_version">Favorite v1.0</string>
+    <string name="about_author">Author: Giz</string>
+    <string name="about_trick_title">How to collection: </string>
+
+    <string name="no_rich_content">Content saved below(Please check your internet)</string>
+
+</resources>

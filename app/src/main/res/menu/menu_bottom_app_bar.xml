@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/bab_about"
+        android:title="@string/bab_option_about"
+        android:icon="@drawable/ic_about_white"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/bab_clipboard"
+        android:title="@string/bab_option_clipboard"
+        android:icon="@drawable/ic_board_white"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/bab_search"
+        android:title="@string/bab_option_search"
+        android:icon="@drawable/ic_search_white"
+        app:showAsAction="ifRoom" />
+</menu>

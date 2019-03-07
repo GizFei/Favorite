@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_CL"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/main_appbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:elevation="0dp">
+
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_scrollFlags="scroll|enterAlwaysCollapsed">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/main_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@color/white"
+                app:contentInsetStart="0dp">
+
+                <TextView
+                    android:id="@+id/main_archive_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:text="@string/main_title"
+                    android:textSize="18sp"
+                    android:textColor="@color/black"
+                    android:background="@color/white"
+                    android:paddingStart="@dimen/dimen_8"
+                    android:paddingEnd="@dimen/dimen_8"
+                    android:gravity="center_vertical"
+                    />
+
+            </android.support.v7.widget.Toolbar>
+
+        </android.support.design.widget.CollapsingToolbarLayout>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/main_srl"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/main_recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/favorite_rv_background"
+            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+            android:orientation="vertical"
+            android:layoutAnimation="@anim/favorite_layout_anim">
+
+        </android.support.v7.widget.RecyclerView>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+    <include layout="@layout/bg_main_no_item"
+        android:id="@+id/main_bmni"
+        android:visibility="gone"/>
+
+    <View
+        android:id="@+id/main_mask"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/transparent"
+        android:visibility="gone"/>
+
+    <android.support.design.bottomappbar.BottomAppBar
+        style="@style/Widget.MaterialComponents.BottomAppBar"
+        android:id="@+id/main_bottomAppBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        app:navigationIcon="@drawable/ic_menu_white"
+        app:backgroundTint="@color/colorPrimary"
+        app:fabCradleVerticalOffset="0dp"
+        app:fabCradleMargin="@dimen/dimen_8"
+        app:fabAlignmentMode="center"
+        app:hideOnScroll="true">
+
+    </android.support.design.bottomappbar.BottomAppBar>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/main_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_add_white"
+        android:backgroundTint="@color/black"
+        app:rippleColor="@color/white"
+        app:fabSize="normal"
+        app:layout_anchor="@id/main_bottomAppBar"
+        app:layout_anchorGravity="top"/>
+
+    <View
+        android:id="@+id/clip_mask"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:elevation="12dp"
+        android:alpha="0"
+        android:background="#45000000"/>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/clip_cardView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/dimen_24"
+        app:cardElevation="12dp"
+        android:visibility="gone"
+        app:cardCornerRadius="@dimen/dimen_8"
+        android:scaleX="0.4"
+        android:scaleY="0.4"
+        android:alpha="0.4"
+        android:backgroundTint="@color/colorPrimary"
+        android:layout_gravity="center">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="收藏剪贴板内容"
+                android:padding="@dimen/dimen_8"
+                android:layout_margin="@dimen/dimen_8"
+                android:textColor="@color/white"/>
+
+            <TextView
+                android:id="@+id/clip_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="108dp"
+                android:maxHeight="200dp"
+                android:background="@color/white"
+                android:padding="@dimen/dimen_16"
+                android:textSize="12sp"
+                android:scrollbars="vertical"
+                android:text="收藏内容收藏内容收藏"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@drawable/bg_clip_ll"
+                android:paddingTop="@dimen/dimen_8"
+                android:paddingBottom="@dimen/dimen_16">
+
+                <Button
+                    android:id="@+id/clip_cancel_btn"
+                    style="@style/Base.Widget.AppCompat.Button.Borderless"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/dimen_36"
+                    android:layout_marginStart="@dimen/dimen_16"
+                    android:layout_marginEnd="@dimen/dimen_16"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_new_item_cancel"
+                    android:text="@android:string/cancel" />
+
+                <Button
+                    android:id="@+id/clip_ok_btn"
+                    style="@style/Base.Widget.AppCompat.Button.Borderless"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/dimen_36"
+                    android:layout_marginStart="@dimen/dimen_16"
+                    android:layout_marginEnd="@dimen/dimen_16"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_new_item_ok"
+                    android:text="@android:string/ok"
+                    android:textColor="@color/white" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/main_back_to_top"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/dimen_16"
+        android:layout_marginBottom="72dp"
+        android:visibility="gone"
+        android:src="@drawable/ic_arrow_up_white"
+        android:layout_gravity="bottom|end"
+        app:fabSize="mini" />
+
+</android.support.design.widget.CoordinatorLayout>

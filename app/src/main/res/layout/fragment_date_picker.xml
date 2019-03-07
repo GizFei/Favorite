@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical"
+    android:layout_height="wrap_content"
+    android:layout_width="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:text="@string/date_picker_title"
+        android:paddingTop="@dimen/dimen_8"
+        android:layout_margin="@dimen/dimen_8"
+        android:textSize="20sp"/>
+
+    <DatePicker
+        android:id="@+id/dialog_date_picker"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_margin="@dimen/dimen_8"
+        android:calendarViewShown="false" />
+
+</LinearLayout>

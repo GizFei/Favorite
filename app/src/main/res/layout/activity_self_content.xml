@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.circularreveal.CircularRevealFrameLayout
+    android:id="@+id/self_content_rootView"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_marginBottom="52dp"
+        android:paddingBottom="@dimen/dimen_16">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="@dimen/dimen_8" >
+
+            <ImageView
+                android:id="@+id/self_content_back"
+                android:layout_width="@dimen/dimen_24"
+                android:layout_height="@dimen/dimen_24"
+                android:src="@drawable/ic_arrow_left_black"
+                android:background="?attr/actionBarItemBackground"
+                android:contentDescription="@string/img_content_desc" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="@dimen/dimen_8"
+                android:text="@string/new_item_text"
+                android:textColor="@color/black"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/favorite_rv_background"
+            android:layout_marginTop="@dimen/dimen_8"/>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dimen_16"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="@dimen/dimen_16"
+            android:layout_marginBottom="@dimen/dimen_16"
+            android:hint="@string/new_item_title"
+            app:hintTextAppearance="@style/CustomTextAppearance"
+            app:hintEnabled="true"
+            android:background="@drawable/mtf_drawable">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/self_content_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:maxLines="1"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <EditText
+            android:id="@+id/self_content_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/dimen_16"
+            android:layout_marginEnd="@dimen/dimen_16"
+            android:background="@drawable/bg_self_content_et"
+            android:gravity="top"
+            android:hint="@string/new_item_content"
+            android:lines="6"
+            android:padding="@dimen/dimen_8" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/self_content_ok_btn"
+        style="@style/Base.Widget.AppCompat.Button.Borderless"
+        android:layout_width="match_parent"
+        android:layout_marginBottom="@dimen/dimen_16"
+        android:layout_height="@dimen/dimen_36"
+        android:layout_marginStart="@dimen/dimen_16"
+        android:layout_marginEnd="@dimen/dimen_16"
+        android:layout_weight="1"
+        android:background="@drawable/bg_new_item_ok"
+        android:text="@android:string/ok"
+        android:textColor="@color/white"
+        android:layout_gravity="bottom"/>
+
+</android.support.design.circularreveal.CircularRevealFrameLayout>
