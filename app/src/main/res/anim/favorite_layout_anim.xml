@@ -2,6 +2,6 @@
 <layoutAnimation xmlns:android="http://schemas.android.com/apk/res/android"
     android:animation="@anim/favorite_anim"
     android:interpolator="@android:interpolator/accelerate_decelerate"
-    android:delay="15%"
+    android:delay="12%"
     android:animationOrder="normal">
 </layoutAnimation>

@@ -453,37 +453,41 @@ public class CollectionActivity extends AppCompatActivity {
             if(mFavoriteItem != null){
                 needToFetchTitle = true;
                 new NetTask().execute(content);
+                return;
             }
             else{
-                showFailInfo();
+                String hrefShareContent = String.format("<a href=\"%s\" />", content);
+                mFavoriteItem = new FavoriteItem();
+                mFavoriteItem.setSource(SourceApp.APP_SELF);
+                mFavoriteItem.setContent(hrefShareContent);
             }
         }else{
             // 人工输入标题
             mFavoriteItem = new FavoriteItem();
             mFavoriteItem.setSource(SourceApp.APP_SELF);
             mFavoriteItem.setContent(content);
-
-            new AlertDialog.Builder(this)
-                    .setTitle("添加标题")
-                    .setView(editText)
-                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            mFavoriteItem.setTitle(editText.getText().toString());
-                        }
-                    }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    mFavoriteItem.setTitle(CommonUtil.getDateDetailDescription(mFavoriteItem.getDate()) + " 的收藏");
-                }
-            }).setOnDismissListener(new DialogInterface.OnDismissListener() {
-                @Override
-                public void onDismiss(DialogInterface dialog) {
-                    FavoriteItemLib.get(CollectionActivity.this).addFavoriteItem(mFavoriteItem);
-                    successToCollect();
-                }
-            }).show();
         }
+
+        new AlertDialog.Builder(this)
+                .setTitle("添加标题")
+                .setView(editText)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mFavoriteItem.setTitle(editText.getText().toString());
+                    }
+                }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                mFavoriteItem.setTitle(CommonUtil.getDateDetailDescription(mFavoriteItem.getDate()) + " 的收藏");
+            }
+        }).setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                FavoriteItemLib.get(CollectionActivity.this).addFavoriteItem(mFavoriteItem);
+                successToCollect();
+            }
+        }).show();
     }
 
     /**

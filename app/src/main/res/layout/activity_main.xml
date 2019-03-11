@@ -25,18 +25,31 @@
                 android:background="@color/white"
                 app:contentInsetStart="0dp">
 
-                <TextView
-                    android:id="@+id/main_archive_title"
-                    android:layout_width="match_parent"
-                    android:layout_height="?attr/actionBarSize"
-                    android:text="@string/main_title"
-                    android:textSize="18sp"
-                    android:textColor="@color/black"
-                    android:background="@color/white"
-                    android:paddingStart="@dimen/dimen_8"
-                    android:paddingEnd="@dimen/dimen_8"
-                    android:gravity="center_vertical"
-                    />
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/main_archive_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="?attr/actionBarSize"
+                        android:text="@string/main_title"
+                        android:textSize="18sp"
+                        android:textColor="@color/black"
+                        android:background="?attr/selectableItemBackground"
+                        android:paddingStart="@dimen/dimen_8"
+                        android:paddingEnd="@dimen/dimen_24"
+                        android:gravity="center_vertical" />
+
+                    <ImageView
+                        android:id="@+id/main_drop_down_icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end|center_vertical"
+                        android:contentDescription="@string/img_content_desc"
+                        android:src="@drawable/ic_arrow_drop_down_black" />
+
+                </FrameLayout>
 
             </android.support.v7.widget.Toolbar>
 

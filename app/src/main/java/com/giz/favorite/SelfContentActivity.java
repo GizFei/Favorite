@@ -29,22 +29,32 @@ public class SelfContentActivity extends AppCompatActivity {
     private static final String EXTRA_DX = "extra_dx";
     private static final String EXTRA_DY = "extra_dy";
     private static final String EXTRA_START_RADIUS = "extra_sr";
+    private static final String EXTRA_MODE = "extra_mode";
+    private static final String EXTRA_UUID = "extra_uuid";
+    public static final int MODE_CREATE = 1;
+    public static final int MODE_EDIT = 2;
 
     private CircularRevealFrameLayout mFrameLayout;
     private ImageView mBackIcon;
     private TextInputEditText mTitleEt;
     private EditText mContentEt;
     private Button mOkBtn;
+    private Button mCancelBtn;
 
     private int mDx;
     private int mDy;
     private int mSr;
+    private int mMode;
 
-    public static Intent newIntent(Context context, int dx, int dy, int startRadius){
+    private FavoriteItem mFavoriteItem;
+
+    public static Intent newIntent(Context context, int dx, int dy, int startRadius, int mode, @Nullable String uuid){
         Intent intent = new Intent(context, SelfContentActivity.class);
         intent.putExtra(EXTRA_DX, dx);
         intent.putExtra(EXTRA_DY, dy);
         intent.putExtra(EXTRA_START_RADIUS, startRadius);
+        intent.putExtra(EXTRA_MODE, mode);
+        intent.putExtra(EXTRA_UUID, uuid);
 
         return intent;
     }
@@ -67,7 +77,13 @@ public class SelfContentActivity extends AppCompatActivity {
         mContentEt = findViewById(R.id.self_content_content);
         mBackIcon = findViewById(R.id.self_content_back);
         mOkBtn = findViewById(R.id.self_content_ok_btn);
+        mCancelBtn = findViewById(R.id.self_content_cancel_btn);
 
+        mMode = getIntent().getIntExtra(EXTRA_MODE, MODE_CREATE);
+        if(mMode == MODE_EDIT){
+            String uuid = getIntent().getStringExtra(EXTRA_UUID);
+            mFavoriteItem = FavoriteItemLib.get(this).findFavoriteItemById(uuid);
+        }
         initViews();
     }
 
@@ -81,11 +97,22 @@ public class SelfContentActivity extends AppCompatActivity {
 
                 int endRadius = (int)Math.hypot(mFrameLayout.getWidth(), mFrameLayout.getHeight());
                 Animator animator = ViewAnimationUtils.createCircularReveal(mFrameLayout, mDx, mDy, mSr, endRadius);
-                animator.setDuration(800);
+                animator.setDuration(560);
                 animator.start();
             }
         });
+        if(mMode == MODE_EDIT){
+            // 编辑模式
+            mTitleEt.setText(mFavoriteItem.getTitle());
+            mContentEt.setText(mFavoriteItem.getContent());
+        }
         mBackIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myOnBackPressed();
+            }
+        });
+        mCancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 myOnBackPressed();
@@ -94,14 +121,24 @@ public class SelfContentActivity extends AppCompatActivity {
         mOkBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // 添加收藏项
-                FavoriteItem newItem = new FavoriteItem();
-                newItem.setSource(SourceApp.APP_SELF);  // 原创
-                newItem.setTitle(mTitleEt.getText().toString());
-                newItem.setContent(mContentEt.getText().toString());
-                FavoriteItemLib.get(SelfContentActivity.this).addFavoriteItem(newItem);
+                if(mMode == MODE_CREATE){
+                    // 添加收藏项
+                    FavoriteItem newItem = new FavoriteItem();
+                    newItem.setSource(SourceApp.APP_SELF);  // 原创
+                    newItem.setTitle(mTitleEt.getText().toString());
+                    newItem.setContent(mContentEt.getText().toString());
+                    FavoriteItemLib.get(SelfContentActivity.this).addFavoriteItem(newItem);
 
-                myOnBackPressed();
+                    myOnBackPressed();
+                }else{
+                    // 更新收藏项
+                    mFavoriteItem.setTitle(mTitleEt.getText().toString());
+                    mFavoriteItem.setContent(mContentEt.getText().toString());
+                    FavoriteItemLib.get(SelfContentActivity.this).updateFavoriteItem(mFavoriteItem);
+
+                    setResult(RESULT_OK);
+                    myOnBackPressed();
+                }
             }
         });
     }
@@ -109,7 +146,7 @@ public class SelfContentActivity extends AppCompatActivity {
     private void myOnBackPressed(){
         int endRadius = (int)Math.hypot(mFrameLayout.getWidth(), mFrameLayout.getHeight());
         Animator animator = ViewAnimationUtils.createCircularReveal(mFrameLayout, mDx, mDy, endRadius, mSr);
-        animator.setDuration(600);
+        animator.setDuration(480);
         animator.start();
         animator.addListener(new AnimatorListenerAdapter() {
             @Override

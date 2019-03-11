@@ -35,6 +35,8 @@ import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.method.ScrollingMovementMethod;
+import android.transition.Explode;
+import android.transition.Fade;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -47,6 +49,7 @@ import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -68,6 +71,10 @@ import utility.CommonViewHolder;
 import utility.RoundedBottomSheetDialog;
 import viewtool.CustomToast;
 import viewtool.FavoriteItemAdapter;
+
+import static com.giz.favorite.SideActivity.ARCHIVE_NAME_ALL;
+import static com.giz.favorite.SideActivity.ARCHIVE_NAME_SELF;
+import static com.giz.favorite.SideActivity.ARCHIVE_NAME_STAR;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -96,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean performRvLayoutAnim = true;     // 是否进行布局动画
     private boolean shouldSlideDownBab = false;     // 是否隐藏底部工具栏
 
-    private String mArchiveTitle = SideActivity.ARCHIVE_NAME_ALL;
+    private String mArchiveTitle = ARCHIVE_NAME_ALL;
 
     private Toolbar.OnMenuItemClickListener mBabOptionMenuListener;     // 收藏项操作菜单
     private Toolbar.OnMenuItemClickListener mBabBasicMenuListener;      // 底部工具栏原始菜单
@@ -246,6 +253,85 @@ public class MainActivity extends AppCompatActivity {
                 mRecyclerView.getLayoutManager().startSmoothScroll(smoothScroller);
             }
         });
+        // 标题下拉菜单
+        mArchiveTitleTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showTitleDropdownMenu();
+            }
+        });
+    }
+
+    private void showTitleDropdownMenu() {
+        final PopupWindow popupWindow = new PopupWindow(this);
+        final ImageView dropDownIcon = findViewById(R.id.main_drop_down_icon);
+        dropDownIcon.animate().rotation(180).setDuration(225);
+
+        final View view = getLayoutInflater().inflate(R.layout.popup_main_title, null);
+        RecyclerView recyclerView = view.findViewById(R.id.popup_title_rv);
+        CommonAdapter<String> adapter = new CommonAdapter<String>(this, getPureArchiveTitleList(), R.layout.item_popup_title) {
+            @Override
+            public void bindData(CommonViewHolder viewHolder, final String data, int pos) {
+                viewHolder.setText(R.id.item_archive_title, data);
+                ImageView icon = viewHolder.getView(R.id.item_archive_icon);
+                switch (data) {
+                    case ARCHIVE_NAME_ALL:
+                        icon.setImageResource(R.drawable.ic_archive_folder_all);
+                        break;
+                    case ARCHIVE_NAME_STAR:
+                        icon.setImageResource(R.drawable.ic_archive_folder_star);
+                        break;
+                    case ARCHIVE_NAME_SELF:
+                        icon.setImageResource(R.drawable.ic_archive_folder_self);
+                        break;
+                    default:
+                        icon.setImageResource(R.drawable.ic_archive_folder_normal);
+                        break;
+                }
+                if(data.equals(mArchiveTitle)){
+                    viewHolder.itemView.setBackgroundColor(0xFFEEEEEE);
+                }else{
+                    viewHolder.itemView.setBackgroundResource(R.color.white);
+                }
+
+                viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mArchiveTitle = data;
+                        popupWindow.dismiss();
+                    }
+                });
+            }
+        };
+        recyclerView.setAdapter(adapter);
+
+        popupWindow.setContentView(view);
+        popupWindow.setElevation(CommonUtil.dp2px(this, 16));
+        popupWindow.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_popup_main));
+        popupWindow.setHeight((int)CommonUtil.dp2px(this, 360));
+        popupWindow.setWidth((int)CommonUtil.dp2px(this, 300));
+        popupWindow.showAsDropDown(mArchiveTitleTv);
+        mClipMaskView.setVisibility(View.VISIBLE);
+        mClipMaskView.setAlpha(0f);
+
+        popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                dropDownIcon.animate().rotation(0).setDuration(175);
+                mClipMaskView.setVisibility(View.GONE);
+                updateRecyclerview(mArchiveTitle);
+                mClipMaskView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) { }
+                });
+            }
+        });
+        mClipMaskView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                popupWindow.dismiss();
+            }
+        });
     }
 
     private void openSideActivity() {
@@ -308,7 +394,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private void newFavoriteItem(){
         Intent intent = SelfContentActivity.newIntent(MainActivity.this, mMainFab.getLeft() + mMainFab.getWidth() / 2,
-                mMainFab.getTop() + mMainFab.getHeight() / 2, mMainFab.getSize());
+                mMainFab.getTop() + mMainFab.getHeight() / 2, mMainFab.getSize(), SelfContentActivity.MODE_CREATE, null);
         startActivity(intent, ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this).toBundle());
     }
 
@@ -547,11 +633,11 @@ public class MainActivity extends AppCompatActivity {
     private List<Pair<Integer, FavoriteItem>> getFavoriteItemPairList(String archiveTitle){
         List<Pair<Integer, FavoriteItem>> pairList = new ArrayList<>();
         List<FavoriteItem> itemList;
-        if(archiveTitle == null || archiveTitle.equals(SideActivity.ARCHIVE_NAME_ALL))
+        if(archiveTitle == null || archiveTitle.equals(ARCHIVE_NAME_ALL))
             itemList = FavoriteItemLib.get(this).getFavoriteItemList();
-        else if(archiveTitle.equals(SideActivity.ARCHIVE_NAME_SELF))
+        else if(archiveTitle.equals(ARCHIVE_NAME_SELF))
             itemList = FavoriteItemLib.get(this).getFavoriteItemListBySource(SourceApp.APP_SELF);
-        else if(archiveTitle.equals(SideActivity.ARCHIVE_NAME_STAR))
+        else if(archiveTitle.equals(ARCHIVE_NAME_STAR))
             itemList = FavoriteItemLib.get(this).getFavoriteItemListOfStarred();
         else
             itemList = FavoriteItemLib.get(this).getFavoriteItemListByArchive(archiveTitle);
@@ -768,6 +854,15 @@ public class MainActivity extends AppCompatActivity {
 
         return archiveList;
     }
+    private List<String> getPureArchiveTitleList(){
+        String archiveStr = FavoriteTool.getArchivePreferences(this);
+        List<String> list = new ArrayList<>();
+        list.addAll(Arrays.asList(ARCHIVE_NAME_ALL, ARCHIVE_NAME_STAR, ARCHIVE_NAME_SELF));
+        if(archiveStr != null && !archiveStr.equals(""))
+            list.addAll(Arrays.asList(archiveStr.split(",")));
+
+        return list;
+    }
 
     public void showNewArchiveDialog(final RoundedBottomSheetDialog archivingDialog){
         archivingDialog.hide();
@@ -785,8 +880,8 @@ public class MainActivity extends AppCompatActivity {
                             String archiveTitle = titleEt.getText().toString();
                             if(archiveTitle.equals(""))
                                 CustomToast.make(MainActivity.this, "名称不能为空").show();
-                            else if(archiveTitle.equals("") || archiveTitle.equals(SideActivity.ARCHIVE_NAME_ALL) || archiveTitle.equals(SideActivity.ARCHIVE_NAME_STAR)
-                                    || archiveTitle.equals(SideActivity.ARCHIVE_NAME_SELF)){
+                            else if(archiveTitle.equals("") || archiveTitle.equals(ARCHIVE_NAME_ALL) || archiveTitle.equals(ARCHIVE_NAME_STAR)
+                                    || archiveTitle.equals(ARCHIVE_NAME_SELF)){
                                 CustomToast.make(MainActivity.this, "不能使用内置名称").show();
                                 titleEt.setText("");
                             }else if(mArchiveTitleList.contains(archiveTitle)){

@@ -1,6 +1,7 @@
 package com.giz.favorite;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -17,8 +18,12 @@ import android.support.annotation.IdRes;
 import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.bottomappbar.BottomAppBar;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.Html;
 import android.text.SpannableStringBuilder;
@@ -27,7 +32,10 @@ import android.text.method.LinkMovementMethod;
 import android.text.method.ScrollingMovementMethod;
 import android.text.style.ClickableSpan;
 import android.text.style.ImageSpan;
+import android.transition.Fade;
+import android.transition.TransitionInflater;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
@@ -36,6 +44,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -65,13 +74,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import database.FavoriteItemLib;
+import datatool.ArchiveTool;
 import datatool.FavoriteItem;
 import datatool.FavoriteTool;
 import datatool.HttpSingleTon;
 import datatool.SourceApp;
+import utility.CommonAdapter;
 import utility.CommonUtil;
+import utility.CommonViewHolder;
+import utility.RoundedBottomSheetDialog;
 import utility.RoundedImageView;
 import viewtool.CustomToast;
 
@@ -79,11 +94,15 @@ public class RichContentActivity extends AppCompatActivity {
     // 展示富文本信息的活动
     private static final String TAG = "RichContentActivity";
     private static final String EXTRA_UUID = "extra_uuid";
+    public static final int EDIT_REQUEST_CODE = 1;
 
     private TextView mTextView;
     private TextView mUsernameTv;
     private RoundedImageView mAvatarImg;
     private LinearLayout mUserWrapper;
+    private BottomAppBar mBottomAppBar;
+    private View mShadowView;
+    private NestedScrollView mScrollView;
 
     private FavoriteItem mFavoriteItem;
     private Html.ImageGetter mImageGetter;
@@ -100,14 +119,18 @@ public class RichContentActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rich_content);
+        getWindow().setEnterTransition(new Fade());
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+//                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                 | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
 
         mTextView = findViewById(R.id.rich_content_tv);
         mUsernameTv = findViewById(R.id.rich_content_username);
         mAvatarImg = findViewById(R.id.rich_content_user_avatar);
         mUserWrapper = findViewById(R.id.rich_content_user_wrapper);
+        mBottomAppBar = findViewById(R.id.rich_content_bab);
+        mShadowView = findViewById(R.id.rich_content_shadow);
+        mScrollView = findViewById(R.id.rich_content_scroll_view);
 //        mTextView.setMovementMethod(ScrollingMovementMethod.getInstance());     // 使能够滑动
         mTextView.setMovementMethod(LinkMovementMethod.getInstance());          // 使能够响应点击事件
 
@@ -115,6 +138,7 @@ public class RichContentActivity extends AppCompatActivity {
         mFavoriteItem = FavoriteItemLib.get(this).findFavoriteItemById(uuid);
 
         initHtmlGetter();
+        initBab();
 
         if(mFavoriteItem != null){
             setBasicInfo();         // 填充基本信息
@@ -141,12 +165,71 @@ public class RichContentActivity extends AppCompatActivity {
                     }
                     break;
                 case SourceApp.APP_SELF:
-                    mTextView.setText(mFavoriteItem.getContent());
+                    mTextView.setText(Html.fromHtml(highlightUrl(mFavoriteItem.getContent())));
                     break;
             }
         }else{
             CustomToast.make(this, "收藏项内容为空").show();
         }
+    }
+
+    private String highlightUrl(String content) {
+        Pattern pattern = Pattern.compile("((https?|ftp|file)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|])");
+        Matcher matcher = pattern.matcher(content);
+        while(matcher.find()){
+            content = content.replace(matcher.group(1), String.format("<a href=\"%s\">%s</a>", matcher.group(1), matcher.group(1)));
+        }
+
+        return content;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d(TAG, "onActivityResult: " + resultCode);
+        if(resultCode == RESULT_OK){
+            if(requestCode == EDIT_REQUEST_CODE){
+                mFavoriteItem = FavoriteItemLib.get(this).findFavoriteItemById(mFavoriteItem.getUUID().toString());
+                mTextView.setText(Html.fromHtml(highlightUrl(mFavoriteItem.getContent())));
+                setText(R.id.rich_content_title, mFavoriteItem.getTitle());
+            }
+        }
+    }
+
+    private void initBab() {
+        mBottomAppBar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+        mBottomAppBar.replaceMenu(R.menu.menu_rich_content_option);
+        mBottomAppBar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                // todo 菜单
+                switch (menuItem.getItemId()){
+                    case R.id.rich_content_bab_edit:
+                        if(mFavoriteItem.getSource().equals(SourceApp.APP_SELF)){
+                            Intent intent = SelfContentActivity.newIntent(RichContentActivity.this, mBottomAppBar.getRight(),
+                                    mBottomAppBar.getBottom(), 0, SelfContentActivity.MODE_EDIT, mFavoriteItem.getUUID().toString());
+                            startActivityForResult(intent, EDIT_REQUEST_CODE, ActivityOptionsCompat.makeSceneTransitionAnimation(RichContentActivity.this).toBundle());
+                        }else{
+                            CustomToast.make(RichContentActivity.this, "目前仅支持原创内容编辑").show();
+                        }
+                        return true;
+                    case R.id.rich_content_bab_note:
+                        return true;
+                    case R.id.rich_content_bab_archive:
+                        archivingItem();
+                        return true;
+                    case R.id.rich_content_bab_share:
+
+                        return true;
+                }
+                return false;
+            }
+        });
     }
 
     /**
@@ -494,12 +577,16 @@ public class RichContentActivity extends AppCompatActivity {
 //                }else{
                     // 宽大于高，宽占满
 
-
                 BitmapDrawable bitmapDrawable = new BitmapDrawable(bitmap);
                 mDrawable.addLevel(1, 1, bitmapDrawable);
-                // 图片太小，不调整大小
-                if(factor <= 2f)
+                if(mFavoriteItem.getSource().equals(SourceApp.APP_WECHAT)){
+                    // 微信图片特殊处理
+                    // 图片太小，不调整大小
+                    if(factor <= 2f)
+                        bitmap = Bitmap.createScaledBitmap(bitmap, width, (int)(bitmap.getHeight() * factor), true);
+                }else{
                     bitmap = Bitmap.createScaledBitmap(bitmap, width, (int)(bitmap.getHeight() * factor), true);
+                }
                 mDrawable.setBounds(0, 0, bitmap.getWidth(), bitmap.getHeight());
                 mDrawable.setLevel(1);
 //                }
@@ -543,5 +630,75 @@ public class RichContentActivity extends AppCompatActivity {
 
     private void setText(@IdRes int tvId, String text){
         ((TextView)findViewById(tvId)).setText(text);
+    }
+
+    /**
+     * 归档收藏项
+     */
+    private void archivingItem() {
+        View view = getLayoutInflater().inflate(R.layout.bottom_sheet_item_archiving, null);
+        final RoundedBottomSheetDialog bottomSheetDialog = new RoundedBottomSheetDialog(this, view,
+                R.style.BottomSheetDialog);
+        bottomSheetDialog.getBehavior().setSkipCollapsed(true);
+
+        RecyclerView recyclerView = view.findViewById(R.id.item_archiving_rv);
+        CommonAdapter<ArchiveTool.Archive> commonAdapter = new CommonAdapter<ArchiveTool.Archive>(this,
+                ArchiveTool.getInstance().getAllArchiveList(this), R.layout.item_archive) {
+            @Override
+            public void bindData(CommonViewHolder viewHolder, final ArchiveTool.Archive data, int pos) {
+                viewHolder.setText(R.id.item_archive_title, data.title);
+                viewHolder.setText(R.id.item_archive_count, String.valueOf(data.count));
+                ImageView icon = viewHolder.getView(R.id.item_archive_icon);
+                if (data.title.equals(mFavoriteItem.getArchive()))
+                    icon.setImageResource(R.drawable.ic_archive_folder_normal);
+                else
+                    icon.setImageResource(R.drawable.ic_archive_folder_gray);
+
+                viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (data.title.equals(mFavoriteItem.getArchive())) {
+                            String text = "已存在于[" + data.title + "]收藏夹";
+                            CustomToast.make(RichContentActivity.this, text).show();
+                        } else {
+                            mFavoriteItem.setArchive(data.title);
+                            FavoriteItemLib.get(RichContentActivity.this).updateFavoriteItem(mFavoriteItem);
+                            // 更新布局
+                            String text = "成功收藏到[" + data.title + "]收藏夹";
+                            CustomToast.make(RichContentActivity.this, text).show();
+
+                            bottomSheetDialog.dismiss();
+                        }
+                    }
+                });
+            }
+        };
+        recyclerView.setAdapter(commonAdapter);
+        // 新建收藏夹
+        view.findViewById(R.id.item_archiving_new).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ArchiveTool.getInstance().showNewArchiveDialog(RichContentActivity.this, new ArchiveTool.OnNewArchiveDialogListener() {
+                    @Override
+                    public void onShown() {
+                        bottomSheetDialog.hide();
+                    }
+
+                    @Override
+                    public void onArchived(String archive) {
+                        mFavoriteItem.setArchive(archive);
+                        FavoriteItemLib.get(RichContentActivity.this).updateFavoriteItem(mFavoriteItem);
+                    }
+
+                    @Override
+                    public void onCancelled() {
+                        bottomSheetDialog.show();
+                    }
+                });
+            }
+        });
+
+        bottomSheetDialog.show();
+
     }
 }

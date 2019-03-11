@@ -114,15 +114,15 @@ public class SwipeBackLayout extends FrameLayout {
                 if(mDirection == SWIPE_RIGHT){
                     if(Math.abs(mDeltaX) > mScreenWidth / 3 && mDeltaX > 0){
                         // 滑动距离大于屏幕的一半，滑动至退出
-                        startScrollToFinish(getScrollX(), 0, -mScreenWidth - getScrollX(), 0, 1000);
+                        startScrollToFinish(getScrollX(), 0, -mScreenWidth - getScrollX(), 0, 225);
                     }else{
-                        startScroll(getScrollX(), 0, -getScrollX(), 0, 1000);
+                        startScroll(getScrollX(), 0, -getScrollX(), 0, 800);
                     }
                 }else if(mDirection == SWIPE_LEFT){
                     if(Math.abs(mDeltaX) > mScreenWidth / 3 && mDeltaX < 0){
-                        startScrollToFinish(getScrollX(), 0, mScreenWidth - getScrollX(),0, 1000);
+                        startScrollToFinish(getScrollX(), 0, mScreenWidth - getScrollX(),0, 225);
                     }else{
-                        startScroll(getScrollX(), 0, -getScrollX(), 0, 1000);
+                        startScroll(getScrollX(), 0, -getScrollX(), 0, 800);
                     }
                 }
                 break;

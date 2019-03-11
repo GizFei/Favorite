@@ -11,8 +11,10 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Environment;
 import android.text.format.DateFormat;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.WindowManager;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -180,4 +182,24 @@ public class CommonUtil {
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         return activeNetwork != null && activeNetwork.isConnected();
     }
+
+    public static int getScreenWidth(Context context){
+        WindowManager windowManager = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
+        if(windowManager != null){
+            DisplayMetrics metrics = new DisplayMetrics();
+            windowManager.getDefaultDisplay().getMetrics(metrics);
+            return metrics.widthPixels;
+        }
+        return 400;
+    }
+    public static int getScreenHeight(Context context){
+        WindowManager windowManager = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
+        if(windowManager != null){
+            DisplayMetrics metrics = new DisplayMetrics();
+            windowManager.getDefaultDisplay().getMetrics(metrics);
+            return metrics.heightPixels;
+        }
+        return 600;
+    }
+
 }

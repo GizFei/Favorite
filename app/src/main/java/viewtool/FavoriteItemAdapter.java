@@ -1,11 +1,13 @@
 package viewtool;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -152,7 +154,8 @@ public class FavoriteItemAdapter extends RecyclerView.Adapter<FavoriteItemAdapte
                     @Override
                     public void onClick(View v) {
                         Intent intent = RichContentActivity.newIntent(mContext, item.getUUID().toString());
-                        mContext.startActivity(intent);
+                        ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity)mContext);
+                        mContext.startActivity(intent, optionsCompat.toBundle());
                     }
                 });
 

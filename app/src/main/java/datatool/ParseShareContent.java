@@ -64,6 +64,7 @@ public class ParseShareContent {
                     return parseNoneContent(shareContent);
                 break;
         }
+        // 是网址，但不能被解析，返回空
         return null;
     }
 

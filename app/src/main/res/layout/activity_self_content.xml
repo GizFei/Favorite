@@ -83,18 +83,39 @@
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/self_content_ok_btn"
-        style="@style/Base.Widget.AppCompat.Button.Borderless"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_marginBottom="@dimen/dimen_16"
-        android:layout_height="@dimen/dimen_36"
+        android:layout_height="52dp"
+        android:orientation="horizontal"
+        android:layout_gravity="bottom"
         android:layout_marginStart="@dimen/dimen_16"
         android:layout_marginEnd="@dimen/dimen_16"
-        android:layout_weight="1"
-        android:background="@drawable/bg_new_item_ok"
-        android:text="@android:string/ok"
-        android:textColor="@color/white"
-        android:layout_gravity="bottom"/>
+        android:paddingBottom="@dimen/dimen_16">
+
+        <Button
+            android:id="@+id/self_content_cancel_btn"
+            style="@style/Base.Widget.AppCompat.Button.Borderless"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen_36"
+            android:layout_weight="1"
+            android:background="@drawable/bg_new_item_cancel"
+            android:text="@android:string/cancel"
+            android:textColor="@color/black"
+            android:layout_marginEnd="@dimen/dimen_8"
+            android:layout_gravity="bottom"/>
+
+        <Button
+            android:id="@+id/self_content_ok_btn"
+            style="@style/Base.Widget.AppCompat.Button.Borderless"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen_36"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/dimen_8"
+            android:background="@drawable/bg_new_item_ok"
+            android:text="@android:string/ok"
+            android:textColor="@color/white"
+            android:layout_gravity="bottom"/>
+
+    </LinearLayout>
 
 </android.support.design.circularreveal.CircularRevealFrameLayout>

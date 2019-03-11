@@ -9,11 +9,16 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.text.method.ScrollingMovementMethod;
 import android.transition.Explode;
 import android.transition.Slide;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -21,6 +26,7 @@ import java.util.List;
 
 import datatool.SourceApp;
 import utility.CommonAdapter;
+import utility.CommonUtil;
 import utility.CommonViewHolder;
 import utility.RoundedBottomSheetDialog;
 
@@ -138,5 +144,22 @@ public class AboutActivity extends AppCompatActivity {
                 return "about_hupu.png";
         }
         return null;
+    }
+
+    public void showUpdateLog(View view){
+        TextView textView = new TextView(this);
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+        textView.setText(R.string.update_log);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        int margin16 = (int)CommonUtil.dp2px(this, 16);
+        int margin8 = (int)CommonUtil.dp2px(this, 8);
+        params.setMargins(margin16, margin8, margin16, 0);
+        textView.setLayoutParams(params);
+        textView.setTextColor(Color.BLACK);
+        textView.setLineSpacing(8, 1);
+        textView.setMovementMethod(ScrollingMovementMethod.getInstance());
+
+        RoundedBottomSheetDialog bottomSheetDialog = new RoundedBottomSheetDialog(this, textView, R.style.BottomSheetDialog);
+        bottomSheetDialog.show();
     }
 }

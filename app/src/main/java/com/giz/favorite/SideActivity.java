@@ -80,11 +80,12 @@ public class SideActivity extends AppCompatActivity {
         mSwipeBackLayout.setDirection(SwipeBackLayout.SWIPE_LEFT);
         mSwipeBackLayout.setOnSwipeListener(new SwipeBackLayout.OnSwipeListener() {
             @Override
-            public void onSwipeStart() { }
+            public void onSwipeStart() {
+                onBackPressed();
+            }
 
             @Override
             public void onSwipeFinish() {
-                onBackPressed();
             }
         });
 

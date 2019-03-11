@@ -24,6 +24,7 @@ public class FavoriteTool {
     // todo 批量删除
     // todo 收藏夹批量导入
     // todo 启动页
+    // todo 内容可修改（*应用分享的）
 
     // 与本应用相关的工具
     private static final String TAG = "FavoriteTool";

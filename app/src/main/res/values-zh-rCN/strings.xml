@@ -26,9 +26,34 @@
     <string name="date_picker_title">选择查询的日期</string>
     <string name="main_date_picker">按日期筛选</string>
     <string name="main_show_all">显示所有收藏</string>
-    <string name="about_version">集 v1.0</string>
+    <string name="about_version">集 v1.2</string>
     <string name="about_author">制作人：Giz</string>
     <string name="about_trick_title">收藏小技巧</string>
     <string name="bab_option_about">关于应用</string>
     <string name="no_rich_content">以下显示离线保存的内容（请检查手机的网格）</string>
+    <string name="rich_content_option_edit">编辑</string>
+    <string name="rich_content_option_note">添加笔记</string>
+    <string name="rich_content_option_share">分享</string>
+    <string name="rich_content_option_archive">归档</string>
+    <string name="about_update_log">更新日志</string>
+
+    <string name="update_log">
+        v 1.2(2019.03.11)\n
+            - 新增自定义内容可编辑\n
+            - 修复不能识别的网址收藏失败的问题\n
+            - 修复内容详情中图片比例不正常的问题\n
+        \n
+        v 1.1 (2019.03.08)\n
+        - 新增首页顶部名称直接选择收藏夹\n
+        - 新增收藏详情界面的菜单\n
+        - 更改无图片收藏项高度缩小\n
+        - 修复技巧提示图片过长的问题\n
+        - 修复滑动退出活动动画过长问题\n
+        \n
+        v 1.0 (2019.03.07)\n
+        - 支持“微信”、“知乎”、“豆瓣”、“微博”、“好奇心操作”、“虎扑”的内容收藏。\n
+        - 支持从剪贴板直接收藏复制内容\n
+        - 支持收藏夹归档、内容星标\n
+        - 支持日期搜索、内容搜索\n
+    </string>
 </resources>

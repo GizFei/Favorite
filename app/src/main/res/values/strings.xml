@@ -23,6 +23,11 @@
     <string name="bab_option_search">Search</string>
     <string name="bab_option_clipboard">Check Clipboard</string>
     <string name="bab_option_about">About App</string>
+    <!-- 富文本菜单 -->
+    <string name="rich_content_option_edit">Edit</string>
+    <string name="rich_content_option_note">Note</string>
+    <string name="rich_content_option_share">Share</string>
+    <string name="rich_content_option_archive">Archive</string>
 
     <!-- 删除收藏项时的Snackbar提示 -->
     <string name="del_snackbar_done">Delete</string>
@@ -38,10 +43,15 @@
     <string name="main_show_all">Show all</string>
     
     <!-- 关于页面 -->
-    <string name="about_version">Favorite v1.0</string>
+    <string name="about_version">Favorite v1.2</string>
     <string name="about_author">Author: Giz</string>
     <string name="about_trick_title">How to collection: </string>
+    <string name="about_update_log">Update Log</string>
 
     <string name="no_rich_content">Content saved below(Please check your internet)</string>
+
+    <string name="update_log">
+        Lack
+    </string>
 
 </resources>
