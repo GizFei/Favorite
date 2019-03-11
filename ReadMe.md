@@ -6,7 +6,7 @@
 
 如果在使用过程中有任何疑问或想法，欢迎告知。
 
-[下载Apk](https://github.com/GizFei/Favorite/blob/master/app/build/outputs/apk/debug/app-debug.apk)
+[下载Apk](https://github.com/GizFei/Favorite/blob/master/app/build/outputs/apk/debug/versions/Favorite%20v1.2.apk)
 
 
 
