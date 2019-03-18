@@ -2,6 +2,7 @@ package datatool;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -9,6 +10,11 @@ import android.widget.EditText;
 import com.giz.favorite.MainActivity;
 import com.giz.favorite.R;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -19,24 +25,24 @@ import database.FavoriteItemLib;
 import utility.RoundedBottomSheetDialog;
 import viewtool.CustomToast;
 
+import static android.content.Context.MODE_PRIVATE;
+
 public class ArchiveTool {
 
+    private static final String TAG = "ArchiveTool";
     private static ArchiveTool sArchiveTool;
 
     public static final String ARCHIVE_NAME_ALL = "所有收藏";
     public static final String ARCHIVE_NAME_STAR = "星标收藏";
     public static final String ARCHIVE_NAME_SELF = "我的原创";
 
+    private static final String ARCHIVE_FILE = "archives.txt";
+
     public static ArchiveTool getInstance(){
         if(sArchiveTool == null){
             sArchiveTool = new ArchiveTool();
         }
         return sArchiveTool;
-    }
-
-    public class Archive{
-        public String title;
-        public int count;
     }
 
     // 用户自定义收藏夹名称列表
@@ -154,8 +160,6 @@ public class ArchiveTool {
                                 CustomToast.make(context, "该收藏夹名已存在").show();
                             }else{
                                 addArchive(context, archiveTitle);
-                                String text = "成功收藏到[" + archiveTitle + "]收藏夹";
-                                CustomToast.make(context, text).show();
 
                                 bottomSheetDialog.dismiss();
                                 listener.onArchived(archiveTitle);
@@ -174,7 +178,7 @@ public class ArchiveTool {
     }
 
     // 添加自定义收藏夹
-    private void addArchive(Context context, String archive){
+    public void addArchive(Context context, String archive){
         String archiveStr = FavoriteTool.getArchivePreferences(context);
 //        String archiveStr = getArchiveString();
         if(archiveStr == null || archiveStr.equals(""))
@@ -185,9 +189,63 @@ public class ArchiveTool {
 //        saveArchiveString(archiveStr);
     }
 
+    public void removeArchive(Context context, String archive){
+        String archiveStr = FavoriteTool.getArchivePreferences(context);
+//        String archiveStr = getArchiveString();
+
+        if(archiveStr.contains(archive + ","))
+            archiveStr = archiveStr.replace(archive + ",", "");
+        else
+            archiveStr = archiveStr.replace(archive, "");
+        FavoriteTool.setArchivePreferences(context, archiveStr);
+//        saveArchiveString(archiveStr);
+        FavoriteItemLib.get(context).patchUpdateFavoriteItemByArchive(null, archive);
+    }
+
+    // 收藏夹相关操作
+    public void renameArchive(Context context, String newArchive, String oldArchive){
+        String archiveStr = FavoriteTool.getArchivePreferences(context);
+        archiveStr = archiveStr.replace(oldArchive, newArchive);
+        FavoriteTool.setArchivePreferences(context, archiveStr);
+        FavoriteItemLib.get(context).patchUpdateFavoriteItemByArchive(newArchive, oldArchive);
+//        String archiveStr = getArchiveString();
+//        archiveStr = archiveStr.replace(oldArchive, newArchive);
+//        saveArchiveString(archiveStr);
+//        FavoriteItemLib.get(this).patchUpdateFavoriteItemByArchive(newArchive, oldArchive);
+    }
+
+    // 使用文件存储
+    private void saveArchiveString(Context context, String archiveString){
+        try {
+            FileOutputStream outputStream = context.openFileOutput(ARCHIVE_FILE, MODE_PRIVATE);
+            outputStream.write(archiveString.getBytes());
+            outputStream.close();
+        }catch (FileNotFoundException e) {
+            Log.d(TAG, "saveArchiveString: file not found");
+        }catch (IOException e2){
+            Log.d(TAG, "saveArchiveString: io exception");
+        }
+    }
+    private String getArchiveString(Context context){
+        try {
+            FileInputStream inputStream = context.openFileInput(ARCHIVE_FILE);
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            byte[] bytes = new byte[1024];
+            int length = 0;
+            while ((length = inputStream.read(bytes)) != -1){
+                outputStream.write(bytes, 0, length);
+            }
+            inputStream.close();
+            return outputStream.toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
     public interface OnNewArchiveDialogListener{
         void onShown();
-        void onArchived(String archive);
+        void onArchived(String archiveTitle);
         void onCancelled();
     }
 }

@@ -22,7 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class SwipeMenuRecyclerTouchListener implements RecyclerView.OnItemTouchListener {
-    // 从左向滑打开菜单
+    // 从左向右滑打开菜单
 
     private static final String TAG = "RecyclerTouchListener";
     private final Handler mHandler = new Handler();
@@ -572,6 +572,8 @@ public class SwipeMenuRecyclerTouchListener implements RecyclerView.OnItemTouchL
             animatorSet.playTogether(translateAnimator, alphaAnimator);
             animatorSet.setDuration(duration);
             animatorSet.setInterpolator(new DecelerateInterpolator(1.5f));
+            if(mSwipeListenerPublic != null)
+                mSwipeListenerPublic.onSwipeOptionsClose();
         }
         animatorSet.start();
     }

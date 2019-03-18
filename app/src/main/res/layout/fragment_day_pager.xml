@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraintLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".DayPagerActivity$PlaceholderFragment">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/fragment_day_pager_rv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+        android:orientation="vertical">
+
+    </android.support.v7.widget.RecyclerView>
+
+    <TextView
+        android:id="@+id/fragment_day_pager_noTv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="@string/pager_nothing"
+        android:background="@color/white"
+        android:textColor="@color/black"
+        android:gravity="center"
+        android:visibility="gone"
+        android:paddingStart="@dimen/dimen_8"
+        android:paddingEnd="@dimen/dimen_8"
+        android:textSize="16sp"/>
+
+</android.support.constraint.ConstraintLayout>

@@ -165,6 +165,7 @@
                 android:lineSpacingExtra="4sp"
                 android:scrollbarStyle="outsideOverlay"
                 android:padding="@dimen/dimen_16"
+                android:autoLink="web|email"
                 tools:hint="昨天是人最多的一天，大家一起守到半夜12点，默契地围着村长摆出了一个心形。小时候因为买不起还魂丹埋葬过宠物，这次花光几千元宝买了很多吃的用的和还魂丹，希望我的宝宝到那边也好好的Ծ‸Ծ很难过，但起码陪你走到了最后一刻。"/>
 
         </LinearLayout>

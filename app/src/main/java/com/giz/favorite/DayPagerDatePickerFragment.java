@@ -10,31 +10,28 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.DatePicker;
 
-import com.giz.favorite.R;
-
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-public class DatePickerFragment extends DialogFragment {
+public class DayPagerDatePickerFragment extends DialogFragment {
     private static final String TAG = "DatePickerFragment";
     private static final String ARG_DATE = "date";
     public static final String EXTRA_DATE = "extra_date";
 
     private DatePicker mDatePicker;
-    private MainActivity mActivity;
+    private DayPagerActivity mActivity;
 
-    public static DatePickerFragment newInstance(Date date){
+    public static DayPagerDatePickerFragment newInstance(Date date){
         Bundle args = new Bundle();
         args.putSerializable(ARG_DATE, date);
 
-        DatePickerFragment fragment =  new DatePickerFragment();
+        DayPagerDatePickerFragment fragment =  new DayPagerDatePickerFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -42,7 +39,7 @@ public class DatePickerFragment extends DialogFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        mActivity = (MainActivity) context;
+        mActivity = (DayPagerActivity) context;
     }
 
     @NonNull

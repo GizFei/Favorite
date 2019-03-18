@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 
 import database.FavoriteItemLib;
+import datatool.Archive;
+import datatool.ArchiveTool;
 import datatool.FavoriteItem;
 import datatool.FavoriteTool;
 import datatool.SourceApp;
@@ -37,20 +39,18 @@ import viewtool.SwipeMenuRecyclerTouchListener;
 import viewtool.CustomToast;
 import viewtool.SwipeBackLayout;
 
+import static datatool.ArchiveTool.ARCHIVE_NAME_ALL;
+import static datatool.ArchiveTool.ARCHIVE_NAME_SELF;
+import static datatool.ArchiveTool.ARCHIVE_NAME_STAR;
+
 public class SideActivity extends AppCompatActivity {
     private static final String TAG = "SideActivity";
-    private static final String ARCHIVE_FILE = "archives.txt";
 
-    public static final String ARCHIVE_NAME_ALL = "所有收藏";
-    public static final String ARCHIVE_NAME_STAR = "星标收藏";
-    public static final String ARCHIVE_NAME_SELF = "我的原创";
     public static final String EXTRA_ARCHIVE_TITLE = "archiveTitle";
 
     private RecyclerView mRecyclerView;
     CommonAdapter<Archive> mArchiveAdapter;
     SwipeBackLayout mSwipeBackLayout;
-
-    List<String> mArchiveTitleList = new ArrayList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -110,7 +110,7 @@ public class SideActivity extends AppCompatActivity {
                         break;
                     case R.id.item_archive_delete:
                         // 删除
-                        deleteArchive(mArchiveAdapter.getItem(position).title);
+                        ArchiveTool.getInstance().removeArchive(SideActivity.this, mArchiveAdapter.getItem(position).title);
                         mArchiveAdapter.deleteItem(position);
                         CustomToast.make(SideActivity.this, "删除成功").show();
                         break;
@@ -139,7 +139,7 @@ public class SideActivity extends AppCompatActivity {
     }
 
     private void initRecyclerView(){
-        mArchiveAdapter = new CommonAdapter<Archive>(this, getArchiveList(), R.layout.item_archive) {
+        mArchiveAdapter = new CommonAdapter<Archive>(this, ArchiveTool.getInstance().getAllArchiveList(this), R.layout.item_archive) {
             @Override
             public void bindData(CommonViewHolder viewHolder, final Archive data, int pos) {
                 viewHolder.setText(R.id.item_archive_title, data.title);
@@ -169,10 +169,6 @@ public class SideActivity extends AppCompatActivity {
         mRecyclerView.setAdapter(mArchiveAdapter);
     }
 
-    private void updateRecyclerView(){
-        mArchiveAdapter.updateData(getArchiveList());
-    }
-
     /**
      * 返回结果给主活动
      */
@@ -183,87 +179,26 @@ public class SideActivity extends AppCompatActivity {
         onBackPressed();
     }
 
-    private List<Archive> getArchiveList(){
-        String archiveStr = FavoriteTool.getArchivePreferences(this);
-//        String archiveStr = getArchiveString();
-        mArchiveTitleList = new ArrayList<>();
-        mArchiveTitleList.add(ARCHIVE_NAME_ALL);
-        mArchiveTitleList.add(ARCHIVE_NAME_STAR);
-        mArchiveTitleList.add(ARCHIVE_NAME_SELF);
-        if(archiveStr != null && !archiveStr.equals(""))
-            mArchiveTitleList.addAll(Arrays.asList(archiveStr.split(",")));
-
-        Map<String, Archive> archiveMap = new HashMap<>();
-
-        for(String a : mArchiveTitleList){
-            Archive archive = new Archive();
-            archive.title = a;
-            archive.count = 0;
-            archiveMap.put(a, archive);
-        }
-
-        List<FavoriteItem> itemList = FavoriteItemLib.get(this).getFavoriteItemList();
-        List<Archive> archiveList = new ArrayList<>();
-
-        archiveMap.get(ARCHIVE_NAME_ALL).count = itemList.size();
-        for(FavoriteItem item : itemList){
-            String itemArchive = item.getArchive();
-            Archive archive = archiveMap.get(itemArchive);
-            if(archive != null){
-                archive.count += 1;
-            }
-            if(item.isStarred()){
-                archiveMap.get(ARCHIVE_NAME_STAR).count += 1;
-            }
-            if(item.getSource().equals(SourceApp.APP_SELF)){
-                archiveMap.get(ARCHIVE_NAME_SELF).count += 1;
-            }
-        }
-        for(String archiveTitle : mArchiveTitleList){
-            archiveList.add(archiveMap.get(archiveTitle));
-        }
-
-        return archiveList;
-    }
-
     public void showNewArchiveDialog(View view){
-        View sheetView = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_new_archive, null);
-        final EditText titleEt = sheetView.findViewById(R.id.new_archive_title);
-
-        final RoundedBottomSheetDialog bottomSheetDialog = new RoundedBottomSheetDialog(this, sheetView, R.style.BottomSheetDialog);
-        bottomSheetDialog.setActionViewIDs(new RoundedBottomSheetDialog.OnActionViewListener() {
+        ArchiveTool.getInstance().showNewArchiveDialog(this, new ArchiveTool.OnNewArchiveDialogListener() {
             @Override
-            public void onClick(int viewID) {
-                switch (viewID){
-                    case R.id.new_archive_ok_btn:
-                        if(titleEt != null){
-                            String archiveTitle = titleEt.getText().toString();
-                            if(archiveTitle.equals(""))
-                                CustomToast.make(SideActivity.this, "名称不能为空").show();
-                            else if(archiveTitle.equals("") || archiveTitle.equals(ARCHIVE_NAME_ALL) || archiveTitle.equals(ARCHIVE_NAME_STAR)
-                                    || archiveTitle.equals(ARCHIVE_NAME_SELF)){
-                                CustomToast.make(SideActivity.this, "不能使用内置名称").show();
-                                titleEt.setText("");
-                            }else if(mArchiveTitleList.contains(archiveTitle)){
-                                CustomToast.make(SideActivity.this, "该收藏夹名已存在").show();
-                            }else{
-                                newArchive(archiveTitle);
-
-                                Archive archive = new Archive();
-                                archive.title = archiveTitle;
-                                archive.count = 0;
-                                mArchiveAdapter.addItem(archive);
-                                bottomSheetDialog.dismiss();
-                            }
-                        }
-                        break;
-                    case R.id.new_archive_cancel_btn:
-                        bottomSheetDialog.dismiss();
-                        break;
-                }
+            public void onShown() {
+                
             }
-        }, R.id.new_archive_ok_btn, R.id.new_archive_cancel_btn);
-        bottomSheetDialog.show();
+
+            @Override
+            public void onArchived(String archiveTitle) {
+                Archive archive = new Archive();
+                archive.title = archiveTitle;
+                archive.count = 0;
+                mArchiveAdapter.addItem(archive);
+            }
+
+            @Override
+            public void onCancelled() {
+
+            }
+        });
     }
 
     private void showRenameArchiveDialog(final int pos) {
@@ -274,6 +209,7 @@ public class SideActivity extends AppCompatActivity {
         if(titleEt != null)
             titleEt.setText(oldArchive);
 
+        final List<String> archiveTitleList = ArchiveTool.getInstance().getCustomArchiveTitleList(this);
         final RoundedBottomSheetDialog bottomSheetDialog = new RoundedBottomSheetDialog(this, sheetView, R.style.BottomSheetDialog);
         bottomSheetDialog.setActionViewIDs(new RoundedBottomSheetDialog.OnActionViewListener() {
             @Override
@@ -288,10 +224,10 @@ public class SideActivity extends AppCompatActivity {
                                     || archiveTitle.equals(ARCHIVE_NAME_SELF)){
                                 CustomToast.make(SideActivity.this, "不能使用内置名称").show();
                                 titleEt.setText("");
-                            }else if(mArchiveTitleList.contains(archiveTitle)){
+                            }else if(archiveTitleList.contains(archiveTitle)){
                                 CustomToast.make(SideActivity.this, "该收藏夹名已存在").show();
                             }else{
-                                renameArchive(archiveTitle, oldArchive);
+                                ArchiveTool.getInstance().renameArchive(SideActivity.this, archiveTitle, oldArchive);
 
                                 Archive archive = mArchiveAdapter.getItem(pos);
                                 archive.title = archiveTitle;
@@ -307,76 +243,5 @@ public class SideActivity extends AppCompatActivity {
             }
         }, R.id.new_archive_ok_btn, R.id.new_archive_cancel_btn);
         bottomSheetDialog.show();
-    }
-
-    // 收藏夹相关操作
-    private void renameArchive(String newArchive, String oldArchive){
-        String archiveStr = FavoriteTool.getArchivePreferences(SideActivity.this);
-        archiveStr = archiveStr.replace(oldArchive, newArchive);
-        FavoriteTool.setArchivePreferences(SideActivity.this, archiveStr);
-        FavoriteItemLib.get(this).patchUpdateFavoriteItemByArchive(newArchive, oldArchive);
-//        String archiveStr = getArchiveString();
-//        archiveStr = archiveStr.replace(oldArchive, newArchive);
-//        saveArchiveString(archiveStr);
-//        FavoriteItemLib.get(this).patchUpdateFavoriteItemByArchive(newArchive, oldArchive);
-    }
-
-    private void deleteArchive(String archive){
-        String archiveStr = FavoriteTool.getArchivePreferences(SideActivity.this);
-//        String archiveStr = getArchiveString();
-
-        Log.d(TAG, "onSwipeOptionsClicked: [" + archiveStr + "]");
-        if(archiveStr.contains(archive + ","))
-            archiveStr = archiveStr.replace(archive + ",", "");
-        else
-            archiveStr = archiveStr.replace(archive, "");
-        Log.d(TAG, "onSwipeOptionsClicked: [" + archiveStr + "]");
-        FavoriteTool.setArchivePreferences(SideActivity.this, archiveStr);
-//        saveArchiveString(archiveStr);
-        FavoriteItemLib.get(SideActivity.this).patchUpdateFavoriteItemByArchive(null, archive);
-    }
-
-    private void newArchive(String archive){
-        String archiveStr = FavoriteTool.getArchivePreferences(SideActivity.this);
-//        String archiveStr = getArchiveString();
-        if(archiveStr == null || archiveStr.equals(""))
-            archiveStr = archive;
-        else
-            archiveStr += "," + archive;
-        FavoriteTool.setArchivePreferences(SideActivity.this, archiveStr);
-//        saveArchiveString(archiveStr);
-    }
-
-    private void saveArchiveString(String archiveString){
-        try {
-            FileOutputStream outputStream = openFileOutput(ARCHIVE_FILE, MODE_PRIVATE);
-            outputStream.write(archiveString.getBytes());
-            outputStream.close();
-        }catch (FileNotFoundException e) {
-            Log.d(TAG, "saveArchiveString: file not found");
-        }catch (IOException e2){
-            Log.d(TAG, "saveArchiveString: io exception");
-        }
-    }
-    private String getArchiveString(){
-        try {
-            FileInputStream inputStream = openFileInput(ARCHIVE_FILE);
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            byte[] bytes = new byte[1024];
-            int length = 0;
-            while ((length = inputStream.read(bytes)) != -1){
-                outputStream.write(bytes, 0, length);
-            }
-            inputStream.close();
-            return outputStream.toString();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "";
-        }
-    }
-
-    private class Archive{
-        String title;
-        int count;
     }
 }

@@ -25,7 +25,6 @@
     <string name="search_hint">输入标题/来源</string>
     <string name="date_picker_title">选择查询的日期</string>
     <string name="main_date_picker">按日期筛选</string>
-    <string name="main_show_all">显示所有收藏</string>
     <string name="about_version">集 v1.2</string>
     <string name="about_author">制作人：Giz</string>
     <string name="about_trick_title">收藏小技巧</string>
@@ -38,6 +37,10 @@
     <string name="about_update_log">更新日志</string>
 
     <string name="update_log">
+        v 1.3(2019.03.16)\n
+            - 新增左右滑动视图，更好地聚焦当天收藏\n
+            - 丰富自定义内容编辑，支持更改字体格式、插入图片\n
+        \n
         v 1.2(2019.03.11)\n
             - 新增自定义内容可编辑\n
             - 修复不能识别的网址收藏失败的问题\n
@@ -56,4 +59,8 @@
         - 支持收藏夹归档、内容星标\n
         - 支持日期搜索、内容搜索\n
     </string>
+    <string name="action_settings">设置</string>
+    <string name="section_format">格式</string>
+    <string name="main_day_pager">每日视图</string>
+    <string name="pager_nothing">空空如也...</string>
 </resources>

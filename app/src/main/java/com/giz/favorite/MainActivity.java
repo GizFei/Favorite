@@ -72,9 +72,9 @@ import utility.RoundedBottomSheetDialog;
 import viewtool.CustomToast;
 import viewtool.FavoriteItemAdapter;
 
-import static com.giz.favorite.SideActivity.ARCHIVE_NAME_ALL;
-import static com.giz.favorite.SideActivity.ARCHIVE_NAME_SELF;
-import static com.giz.favorite.SideActivity.ARCHIVE_NAME_STAR;
+import static datatool.ArchiveTool.ARCHIVE_NAME_ALL;
+import static datatool.ArchiveTool.ARCHIVE_NAME_SELF;
+import static datatool.ArchiveTool.ARCHIVE_NAME_STAR;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -153,6 +153,10 @@ public class MainActivity extends AppCompatActivity {
                 // date fragment
                 DatePickerFragment fragment = DatePickerFragment.newInstance(new Date());
                 fragment.show(getSupportFragmentManager(), "DatePicker");
+                return true;
+            case R.id.main_day_pager:
+                Intent intent = new Intent(MainActivity.this, DayPagerActivity.class);
+                startActivity(intent, ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this).toBundle());
                 return true;
         }
         return false;

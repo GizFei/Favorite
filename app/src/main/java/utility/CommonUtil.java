@@ -202,4 +202,23 @@ public class CommonUtil {
         return 600;
     }
 
+    public static boolean isUrl(String text){
+        return text.matches("(https?|ftp|file)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]");
+    }
+
+    public static Bitmap rotateBitmap(Bitmap bitmap, int degree){
+        Matrix matrix = new Matrix();
+        matrix.postRotate(degree);
+
+        Bitmap rotateBm = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+        if(rotateBm == null){
+            rotateBm = bitmap;
+        }
+        if(bitmap != rotateBm){
+            bitmap.recycle();
+        }
+
+        return rotateBm;
+    }
+
 }

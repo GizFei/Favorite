@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.ExifInterface;
 import android.os.Environment;
 import android.util.Log;
 
@@ -100,5 +101,29 @@ public class FavoriteTool {
     public static void setClipboardText(Context context, String text){
         SharedPreferences preferences = context.getSharedPreferences("Clipboard", Context.MODE_PRIVATE);
         preferences.edit().putString("prevText", text).apply();
+    }
+
+    public static int getRotateDegree(String path){
+        try{
+            ExifInterface exifInterface = new ExifInterface(path);
+            int orientation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+            Log.d(TAG, "run: " + orientation);
+            int degree = 0;
+            switch (orientation){
+                case ExifInterface.ORIENTATION_ROTATE_90:
+                    degree = 90;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_180:
+                    degree = 180;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_270:
+                    degree = 270;
+                    break;
+            }
+            return degree;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return 0;
     }
 }

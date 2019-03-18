@@ -12,6 +12,7 @@ import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LevelListDrawable;
+import android.media.ExifInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
@@ -26,6 +27,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.Html;
+import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
@@ -78,6 +80,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import database.FavoriteItemLib;
+import datatool.Archive;
 import datatool.ArchiveTool;
 import datatool.FavoriteItem;
 import datatool.FavoriteTool;
@@ -165,12 +168,48 @@ public class RichContentActivity extends AppCompatActivity {
                     }
                     break;
                 case SourceApp.APP_SELF:
-                    mTextView.setText(Html.fromHtml(highlightUrl(mFavoriteItem.getContent())));
+                    // todo 解决不能换行的问题
+                    mTextView.setText(Html.fromHtml(mFavoriteItem.getContent()));
+                    showLocalImage();
+                    // autoLink属性自动高亮网址
                     break;
             }
         }else{
             CustomToast.make(this, "收藏项内容为空").show();
         }
+    }
+
+    private void showLocalImage() {
+        mTextView.post(new Runnable() {
+            @Override
+            public void run() {
+                SpannableString spannableString = (SpannableString) mTextView.getText();
+                Pattern pattern = Pattern.compile("(<img src=\"(.*)\" />)");
+                Matcher matcher = pattern.matcher(spannableString.toString());
+
+                int width = mTextView.getWidth() - mTextView.getPaddingLeft() - mTextView.getPaddingRight();
+                while(matcher.find()) {
+                    Log.d(TAG, "onCreate: " + matcher.group(2));
+                    final String path = matcher.group(2);
+
+                    int degree = FavoriteTool.getRotateDegree(path);
+                    Bitmap bitmap = CommonUtil.rotateBitmap(BitmapFactory.decodeFile(path), degree);
+                    float factor = (float)width / bitmap.getWidth();
+                    Drawable drawable = new BitmapDrawable(getResources(), bitmap);
+                    drawable.setBounds(0, 0, width, (int)(factor * bitmap.getHeight()));
+
+                    spannableString.setSpan(new ImageSpan(drawable, ImageSpan.ALIGN_BASELINE), matcher.start(), matcher.end(),
+                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    spannableString.setSpan(new ClickableSpan() {
+                        @Override
+                        public void onClick(@NonNull View widget) {
+                            Intent intent = new Intent(ImageDetailActivity.newIntent(RichContentActivity.this, path));
+                            startActivity(intent, ActivityOptionsCompat.makeSceneTransitionAnimation(RichContentActivity.this).toBundle());
+                        }
+                    }, matcher.start(), matcher.end(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                }
+            }
+        });
     }
 
     private String highlightUrl(String content) {
@@ -190,8 +229,9 @@ public class RichContentActivity extends AppCompatActivity {
         if(resultCode == RESULT_OK){
             if(requestCode == EDIT_REQUEST_CODE){
                 mFavoriteItem = FavoriteItemLib.get(this).findFavoriteItemById(mFavoriteItem.getUUID().toString());
-                mTextView.setText(Html.fromHtml(highlightUrl(mFavoriteItem.getContent())));
+                mTextView.setText(Html.fromHtml(mFavoriteItem.getContent()));
                 setText(R.id.rich_content_title, mFavoriteItem.getTitle());
+                showLocalImage();
             }
         }
     }
@@ -224,7 +264,7 @@ public class RichContentActivity extends AppCompatActivity {
                         archivingItem();
                         return true;
                     case R.id.rich_content_bab_share:
-
+                        shareContent();
                         return true;
                 }
                 return false;
@@ -241,7 +281,7 @@ public class RichContentActivity extends AppCompatActivity {
             public Drawable getDrawable(String source) {
                 LevelListDrawable levelListDrawable = new LevelListDrawable();
                 Drawable drawable = getResources().getDrawable(R.drawable.skeleton);
-                levelListDrawable.addLevel(0, 0, drawable);
+                levelListDrawable.addLevel(0, 0, null);
                 int width = mTextView.getWidth() - mTextView.getPaddingRight() - mTextView.getPaddingLeft();
                 levelListDrawable.setBounds(0, 0, width, drawable.getIntrinsicHeight());
 
@@ -642,10 +682,10 @@ public class RichContentActivity extends AppCompatActivity {
         bottomSheetDialog.getBehavior().setSkipCollapsed(true);
 
         RecyclerView recyclerView = view.findViewById(R.id.item_archiving_rv);
-        CommonAdapter<ArchiveTool.Archive> commonAdapter = new CommonAdapter<ArchiveTool.Archive>(this,
+        CommonAdapter<Archive> commonAdapter = new CommonAdapter<Archive>(this,
                 ArchiveTool.getInstance().getAllArchiveList(this), R.layout.item_archive) {
             @Override
-            public void bindData(CommonViewHolder viewHolder, final ArchiveTool.Archive data, int pos) {
+            public void bindData(CommonViewHolder viewHolder, final Archive data, int pos) {
                 viewHolder.setText(R.id.item_archive_title, data.title);
                 viewHolder.setText(R.id.item_archive_count, String.valueOf(data.count));
                 ImageView icon = viewHolder.getView(R.id.item_archive_icon);
@@ -688,6 +728,9 @@ public class RichContentActivity extends AppCompatActivity {
                     public void onArchived(String archive) {
                         mFavoriteItem.setArchive(archive);
                         FavoriteItemLib.get(RichContentActivity.this).updateFavoriteItem(mFavoriteItem);
+
+                        String text = "成功收藏到[" + archive + "]收藏夹";
+                        CustomToast.make(RichContentActivity.this, text).show();
                     }
 
                     @Override
@@ -699,6 +742,29 @@ public class RichContentActivity extends AppCompatActivity {
         });
 
         bottomSheetDialog.show();
+    }
 
+    private void shareContent() {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        switch (mFavoriteItem.getSource()){
+            case SourceApp.APP_SELF:
+            {
+                if(mFavoriteItem.getContent().length() > 64){
+                    intent.putExtra(Intent.EXTRA_TEXT, mFavoriteItem.getTitle() + "__" +
+                            mFavoriteItem.getContent().substring(0, 64) + "...");
+                }else {
+                    intent.putExtra(Intent.EXTRA_TEXT, mFavoriteItem.getTitle() + "__" +
+                            mFavoriteItem.getContent());
+                }
+                break;
+            }
+            default:
+            {
+                intent.putExtra(Intent.EXTRA_TEXT, mFavoriteItem.getTitle() + "__" + mFavoriteItem.getUrl());
+                break;
+            }
+        }
+        startActivity(intent);
     }
 }

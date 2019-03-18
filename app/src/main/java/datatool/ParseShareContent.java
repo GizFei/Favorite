@@ -33,7 +33,7 @@ public class ParseShareContent {
             // 微信
             return SourceApp.APP_WECHAT;
         }
-        return SourceApp.APP_NONE;
+        return SourceApp.APP_SELF;
     }
 
     /**
@@ -58,17 +58,14 @@ public class ParseShareContent {
                 return parseWeiBoContent(shareContent);
             case SourceApp.APP_WECHAT:
                 return parseWeChatContent(shareContent);
-            case SourceApp.APP_NONE:
-                // 未知来源不是网址，则当作纯文本处理
-                if(!isUrl(shareContent))
-                    return parseNoneContent(shareContent);
-                break;
+            default:
+                // 未知App来源，视为原创
+                return parseSelfContent(shareContent);
         }
-        // 是网址，但不能被解析，返回空
-        return null;
     }
 
-    private static FavoriteItem parseNoneContent(String shareContent) {
+    private static FavoriteItem parseSelfContent(String shareContent) {
+        // 当作纯文本处理
         FavoriteItem item = new FavoriteItem();
         item.setSource(SourceApp.APP_SELF);
         item.setContent(shareContent);

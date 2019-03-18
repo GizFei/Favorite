@@ -3,6 +3,7 @@ package com.giz.favorite;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +18,11 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.Volley;
 
+import java.io.FileNotFoundException;
+
+import datatool.FavoriteTool;
+import datatool.ParseShareContent;
+import utility.CommonUtil;
 import viewtool.PinchImageView;
 
 public class ImageDetailActivity extends AppCompatActivity {
@@ -57,20 +63,32 @@ public class ImageDetailActivity extends AppCompatActivity {
             String url = getIntent().getStringExtra(EXTRA_IMG);
             Log.d(TAG, "onCreate: url" + url);
 
-            ImageRequest imageRequest = new ImageRequest(url, new Response.Listener<Bitmap>() {
-                @Override
-                public void onResponse(Bitmap response) {
-                    mPinchImageView.setImageBitmap(response);
-                    startPostponedEnterTransition();
+            if(CommonUtil.isUrl(url)){
+                ImageRequest imageRequest = new ImageRequest(url, new Response.Listener<Bitmap>() {
+                    @Override
+                    public void onResponse(Bitmap response) {
+                        mPinchImageView.setImageBitmap(response);
+                        startPostponedEnterTransition();
+                    }
+                }, 0, 0, ImageView.ScaleType.CENTER_CROP, Bitmap.Config.RGB_565,
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                // 获取图片错误
+                                startPostponedEnterTransition();
+                            }
+                        });
+                mRequestQueue.add(imageRequest);
+            }else {
+                Bitmap bitmap = BitmapFactory.decodeFile(url);
+                if(bitmap != null){
+                    int degree = FavoriteTool.getRotateDegree(url);
+                    mPinchImageView.setImageBitmap(CommonUtil.rotateBitmap(bitmap, degree));
                 }
-            }, 0, 0, ImageView.ScaleType.CENTER_CROP, Bitmap.Config.RGB_565,
-                    new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            // 获取图片错误
-                        }
-                    });
-            mRequestQueue.add(imageRequest);
+                startPostponedEnterTransition();
+            }
+        }else{
+            startPostponedEnterTransition();
         }
     }
 }

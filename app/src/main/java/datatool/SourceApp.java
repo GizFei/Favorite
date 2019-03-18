@@ -2,14 +2,13 @@ package datatool;
 
 public class SourceApp {
     // 来源的App
-    public static final String APP_NONE = "SourceApp.None";        // 不符合要求
     public static final String APP_ZHIHU = "SourceApp.ZhiHu";      // 知乎
     public static final String APP_HUPU = "SourceApp.HuPu";        // 虎扑
     public static final String APP_QDAILY = "SourceApp.QDaily";    // 好奇心日报
     public static final String APP_DOUBAN = "SourceApp.DouBan";    // 豆瓣
     public static final String APP_WEIBO = "SourceApp.WeiBo";        // 微博
     public static final String APP_WECHAT = "SourceApp.WeChat";      // 微信
-    public static final String APP_SELF = "SourceApp.Self";        // 原创
+    public static final String APP_SELF = "SourceApp.Self";        // 如果没有符合上述App的，则全部视为原创
 
     /**
      * 把来源转换为文字描述用于显示
@@ -33,7 +32,7 @@ public class SourceApp {
             case APP_WECHAT:
                 return "微信";
         }
-        return "未知应用";
+        return "原创";
     }
 
     public static String getAppPackageName(String source){
@@ -53,6 +52,6 @@ public class SourceApp {
             case APP_WECHAT:
                 return "com.tencent.mm";
         }
-        return null;
+        return "com.giz.favorite";
     }
 }

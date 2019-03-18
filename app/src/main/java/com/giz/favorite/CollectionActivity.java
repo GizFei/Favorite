@@ -20,6 +20,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.graphics.drawable.Animatable2Compat;
 import android.support.graphics.drawable.AnimatedVectorDrawableCompat;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v7.app.AlertDialog;
@@ -449,7 +450,7 @@ public class CollectionActivity extends AppCompatActivity {
             // 来源是网址
             Log.d(TAG, "onPrimaryClipChanged: 是网址。");
             mFavoriteItem = ParseShareContent.formFavoriteItem(content);
-            // todo 抓取标题
+            // 抓取标题
             if(mFavoriteItem != null){
                 needToFetchTitle = true;
                 new NetTask().execute(content);
@@ -468,26 +469,11 @@ public class CollectionActivity extends AppCompatActivity {
             mFavoriteItem.setContent(content);
         }
 
-        new AlertDialog.Builder(this)
-                .setTitle("添加标题")
-                .setView(editText)
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mFavoriteItem.setTitle(editText.getText().toString());
-                    }
-                }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                mFavoriteItem.setTitle(CommonUtil.getDateDetailDescription(mFavoriteItem.getDate()) + " 的收藏");
-            }
-        }).setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                FavoriteItemLib.get(CollectionActivity.this).addFavoriteItem(mFavoriteItem);
-                successToCollect();
-            }
-        }).show();
+        // 跳转到SelfContentActivity
+        Intent intent = SelfContentActivity.newIntent(this, CommonUtil.getScreenWidth(this) / 2,
+                CommonUtil.getScreenHeight(this) / 2, 0, SelfContentActivity.MODE_CREATE, content);
+        startActivity(intent, ActivityOptionsCompat.makeSceneTransitionAnimation(this).toBundle());
+        finish();
     }
 
     /**

@@ -5,6 +5,7 @@
     <string name="new_item_text">New Item</string>
     <string name="new_archive_text">New Archive</string>
     <string name="archiving_item_text">Archive the article to&#8230;</string>
+    <string name="pager_nothing">Nothing&#8230;</string>
 
     <string name="new_item_title">Title</string>
     <string name="new_item_content">Content</string>
@@ -40,8 +41,8 @@
 
     <!-- 主页菜单 -->
     <string name="main_date_picker">Pick time</string>
-    <string name="main_show_all">Show all</string>
-    
+    <string name="main_day_pager">Pager View</string>
+
     <!-- 关于页面 -->
     <string name="about_version">Favorite v1.2</string>
     <string name="about_author">Author: Giz</string>
@@ -53,5 +54,7 @@
     <string name="update_log">
         Lack
     </string>
+    <string name="action_settings">Settings</string>
+    <string name="section_format">Hello World from section: %1$d</string>
 
 </resources>

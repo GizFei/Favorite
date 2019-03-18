@@ -37,6 +37,7 @@
     <style name="BottomSheet" parent="Widget.Design.BottomSheet.Modal">
         <item name="android:background">@drawable/bg_bottom_sheet</item>
     </style>
+
     <style name="BottomSheetDialog" parent="Theme.Design.Light.BottomSheetDialog">
         <item name="android:windowIsFloating">false</item>
         <item name="bottomSheetStyle">@style/BottomSheet</item>
@@ -48,5 +49,9 @@
     <style name="CustomTextAppearance" parent="TextAppearance.Design.Hint">
         <item name="android:textColor">@color/colorAccent</item>
     </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
 </resources>
